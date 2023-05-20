@@ -26,20 +26,21 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public UnityEvent OnUpgradeMenu = new();
     [HideInInspector] public UnityEvent<UpgradeManager.Upgrade> OnUpgradeSkill = new();
     [HideInInspector] public UnityEvent OnScoreChange = new();
-    [HideInInspector] public UnityEvent OnCoinsChange = new();
+    [HideInInspector] public UnityEvent OnStarsChange = new();
     [HideInInspector] public UnityEvent OnFuelChange = new();
 
     public GameState CurrentGameState { get; private set; }
     public bool HasDoubleLife { get; private set; }
     public bool HasAd { get; private set; }
     public float Score { get; private set; }
-    public int Coins { get; private set; }
+    public int Stars { get; private set; }
 
     [SerializeField] private Transform _rocketSpawnPoint;
     [SerializeField] private GameObject _rocketObject;
     [SerializeField] private GameObject _cameraObject;
 
     private const float SCORE_COEFFICIENT = 100.0f;
+    private const float FUEL_PERCENTAGE = 15.0f;
 
     private FuelConsumption _rocketFuelConsumption;
     private CollisionDetection _rocketCollisionDetection;
@@ -66,7 +67,7 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            SaveDataManager.Instance.AddCoins(10000);
+            SaveDataManager.Instance.AddStars(10000);
         }
 
         Scoring();
@@ -118,7 +119,7 @@ public class GameManager : MonoBehaviour
     {
         CurrentGameState = GameState.GAME;
         Score = 0.0f;
-        Coins = 0;
+        Stars = 0;
         HasDoubleLife = SaveDataManager.Instance.LoadUpgrade(UpgradeManager.Upgrade.DOUBLE_LIFE) == 1.0f ? true : false;
         HasAd = true;
         OnStartGame.Invoke();
@@ -160,7 +161,7 @@ public class GameManager : MonoBehaviour
 
         CurrentGameState = GameState.LOSS;
         SaveDataManager.Instance.SaveScore(Convert.ToInt32(Score));
-        SaveDataManager.Instance.AddCoins(Coins);
+        SaveDataManager.Instance.AddStars(Stars);
         OnLossGame.Invoke();
     }
 
@@ -221,18 +222,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void CollectCoin()
+    private void CollectStar()
     {
-        AudioManager.Instance.PlaySound(AudioManager.Sound.COIN);
-        ++Coins;
-        OnCoinsChange.Invoke();
+        AudioManager.Instance.PlaySound(AudioManager.Sound.STAR);
+        ++Stars;
+        OnStarsChange.Invoke();
+    }
+
+    private void CollectFuel()
+    {
+        AudioManager.Instance.PlaySound(AudioManager.Sound.FUEL);
+        _rocketFuelConsumption.AddFuel(FUEL_PERCENTAGE);
+        OnFuelChange.Invoke();
     }
 
     private void InitializeListeners()
     {
         _rocketFuelConsumption.OnFuelRunOutEvent.AddListener(() => LossGame());
-        _rocketCollisionDetection.OnEnemyCollisionEvent.AddListener(() => LossGame());
-        _rocketCollisionDetection.OnCoinCollisionEvent.AddListener(() => CollectCoin());
+        _rocketCollisionDetection.OnObstacleCollisionEvent.AddListener(() => LossGame());
+        _rocketCollisionDetection.OnStarCollisionEvent.AddListener(() => CollectStar());
+        _rocketCollisionDetection.OnFuelCollisionEvent.AddListener(() => CollectFuel());
         _rocketBeyondScreenDetection.OnScreenBottomReached.AddListener(() => LossGame());
 
         MenuUI menuUI = UIManager.Instance.GetMenuUI();
@@ -262,8 +271,8 @@ public class GameManager : MonoBehaviour
     private void DeinitializeListeners()
     {
         _rocketFuelConsumption.OnFuelRunOutEvent.RemoveAllListeners();
-        _rocketCollisionDetection.OnEnemyCollisionEvent.RemoveAllListeners();
-        _rocketCollisionDetection.OnCoinCollisionEvent.RemoveAllListeners();
+        _rocketCollisionDetection.OnObstacleCollisionEvent.RemoveAllListeners();
+        _rocketCollisionDetection.OnStarCollisionEvent.RemoveAllListeners();
         _rocketBeyondScreenDetection.OnScreenBottomReached.RemoveAllListeners();
     }
 }

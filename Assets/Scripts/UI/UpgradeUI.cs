@@ -15,19 +15,19 @@ public class UpgradeUI : MonoBehaviour
     [Header("Upgrade Values Texts")]
     [SerializeField] private TextMeshProUGUI _speedUpValueText;
     [SerializeField] private TextMeshProUGUI _fuelConsumptionValueText;
-    [SerializeField] private TextMeshProUGUI _enemySpeedValueText;
+    [SerializeField] private TextMeshProUGUI _obstacleSpeedValueText;
     [SerializeField] private TextMeshProUGUI _doubleLifeValueText;
 
     [Header("Upgrade Prices Texts")]
     [SerializeField] private TextMeshProUGUI _speedUpPriceText;
     [SerializeField] private TextMeshProUGUI _fuelConsumptionPriceText;
-    [SerializeField] private TextMeshProUGUI _enemySpeedPriceText;
+    [SerializeField] private TextMeshProUGUI _obstacleSpeedPriceText;
     [SerializeField] private TextMeshProUGUI _doubleLifePriceText;
 
     [Header("Upgrade Buttons")]
     [SerializeField] private Button _speedUpUpgradeButton;
     [SerializeField] private Button _fuelConsumptionUpgradeButton;
-    [SerializeField] private Button _enemySpeedUpgradeButton;
+    [SerializeField] private Button _obstacleSpeedUpgradeButton;
     [SerializeField] private Button _doubleLifeUpgradeButton;
 
     private Dictionary<UpgradeManager.Upgrade, 
@@ -53,8 +53,8 @@ public class UpgradeUI : MonoBehaviour
                 (_speedUpValueText, _speedUpPriceText, _speedUpUpgradeButton) },
             { UpgradeManager.Upgrade.FUEL_CONSUMPTION,
                 (_fuelConsumptionValueText, _fuelConsumptionPriceText, _fuelConsumptionUpgradeButton) },
-            { UpgradeManager.Upgrade.ENEMY_SPEED,
-                (_enemySpeedValueText, _enemySpeedPriceText, _enemySpeedUpgradeButton) },
+            { UpgradeManager.Upgrade.OBSTACLE_SPEED,
+                (_obstacleSpeedValueText, _obstacleSpeedPriceText, _obstacleSpeedUpgradeButton) },
             { UpgradeManager.Upgrade.DOUBLE_LIFE,
                 (_doubleLifeValueText, _doubleLifePriceText, _doubleLifeUpgradeButton) }
         };
@@ -67,8 +67,8 @@ public class UpgradeUI : MonoBehaviour
             OnUpgradeButtonClicked(UpgradeManager.Upgrade.SPEED_UP));
         _fuelConsumptionUpgradeButton.onClick.AddListener(() => 
             OnUpgradeButtonClicked(UpgradeManager.Upgrade.FUEL_CONSUMPTION));
-        _enemySpeedUpgradeButton.onClick.AddListener(() => 
-            OnUpgradeButtonClicked(UpgradeManager.Upgrade.ENEMY_SPEED));
+        _obstacleSpeedUpgradeButton.onClick.AddListener(() => 
+            OnUpgradeButtonClicked(UpgradeManager.Upgrade.OBSTACLE_SPEED));
         _doubleLifeUpgradeButton.onClick.AddListener(() => 
             OnUpgradeButtonClicked(UpgradeManager.Upgrade.DOUBLE_LIFE));
     }

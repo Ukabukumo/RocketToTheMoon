@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class SaveDataManager : MonoBehaviour
 {
     public static SaveDataManager Instance { get; private set; }
-    public UnityEvent OnCoinsChangeEvent = new();
+    public UnityEvent OnStarsChangeEvent = new();
 
     private const string FIRST_SCORE_KEY = "FirstScore";
     private const string SECOND_SCORE_KEY = "SecondScore";
@@ -14,19 +14,19 @@ public class SaveDataManager : MonoBehaviour
 
     private const string SPEED_UP_UPGRADE_KEY = "SpeedUpUpgrade";
     private const string FUEL_CONSUMPTION_UPGRADE_KEY = "FuelConsumptionUpgrade";
-    private const string ENEMY_SPEED_UPGRADE_KEY = "EnemySpeedUpgrade";
+    private const string ENEMY_SPEED_UPGRADE_KEY = "ObstacleSpeedUpgrade";
     private const string DOUBLE_LIFE_UPGRADE_KEY = "DoubleLifeUpgrade";
 
     private const string SPEED_UP_PRICE_KEY = "SpeedUpPrice";
     private const string FUEL_CONSUMPTION_PRICE_KEY = "FuelConsumptionPrice";
-    private const string ENEMY_SPEED_PRICE_KEY = "EnemySpeedPrice";
+    private const string OBSTACLE_SPEED_PRICE_KEY = "ObstacleSpeedPrice";
     private const string DOUBLE_LIFE_PRICE_KEY = "DoubleLifePrice";
 
     private readonly Dictionary<UpgradeManager.Upgrade, string> _upgradeKeys = new()
     {
         { UpgradeManager.Upgrade.SPEED_UP, SPEED_UP_UPGRADE_KEY },
         { UpgradeManager.Upgrade.FUEL_CONSUMPTION, FUEL_CONSUMPTION_UPGRADE_KEY },
-        { UpgradeManager.Upgrade.ENEMY_SPEED, ENEMY_SPEED_UPGRADE_KEY },
+        { UpgradeManager.Upgrade.OBSTACLE_SPEED, ENEMY_SPEED_UPGRADE_KEY },
         { UpgradeManager.Upgrade.DOUBLE_LIFE, DOUBLE_LIFE_UPGRADE_KEY }
     };
 
@@ -34,7 +34,7 @@ public class SaveDataManager : MonoBehaviour
     {
         { UpgradeManager.Upgrade.SPEED_UP, SPEED_UP_PRICE_KEY },
         { UpgradeManager.Upgrade.FUEL_CONSUMPTION, FUEL_CONSUMPTION_PRICE_KEY },
-        { UpgradeManager.Upgrade.ENEMY_SPEED, ENEMY_SPEED_PRICE_KEY },
+        { UpgradeManager.Upgrade.OBSTACLE_SPEED, OBSTACLE_SPEED_PRICE_KEY },
         { UpgradeManager.Upgrade.DOUBLE_LIFE, DOUBLE_LIFE_PRICE_KEY }
     };
 
@@ -88,20 +88,25 @@ public class SaveDataManager : MonoBehaviour
         return scores;
     }
 
-    public void AddCoins(int coins)
+    public void AddStars(int stars)
     {
-        int loadedCoins = LoadCoins();
-        loadedCoins += coins;
-        PlayerPrefs.SetInt("Coins", loadedCoins);
-        PlayerPrefs.Save();
-        OnCoinsChangeEvent.Invoke();
+        int loadedStars = LoadStars();
+        loadedStars += stars;
+        SaveStars(loadedStars);
     }
 
-    public int LoadCoins()
+    public void SaveStars(int stars)
     {
-        if (PlayerPrefs.HasKey("Coins"))
+        PlayerPrefs.SetInt("Stars", stars);
+        PlayerPrefs.Save();
+        OnStarsChangeEvent.Invoke();
+    }
+
+    public int LoadStars()
+    {
+        if (PlayerPrefs.HasKey("Stars"))
         {
-            return PlayerPrefs.GetInt("Coins");
+            return PlayerPrefs.GetInt("Stars");
         }
         else
         {

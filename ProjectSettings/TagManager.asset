@@ -4,8 +4,9 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Enemy
-  - Coin
+  - Star
+  - Fuel
+  - Obstacle
   layers:
   - Default
   - TransparentFX

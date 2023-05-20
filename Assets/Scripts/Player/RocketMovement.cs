@@ -4,8 +4,10 @@ public class RocketMovement : MonoBehaviour
 {
     [SerializeField] private ControlArm _controlArm;
     [SerializeField] private Transform _spawnPoint;
+    [SerializeField] private GameObject _flame;
 
     private const float ROTATION_LIMIT = 60.0f;
+    private const float ROTATION_SPEED = 3.0f;
     private const float ROCKET_SPEED_UP = 650.0f;
     private const float MAX_ROCKET_SPEED = 5.0f;
 
@@ -31,6 +33,11 @@ public class RocketMovement : MonoBehaviour
             _controlArm.IsControlling())
         {
             Movement();
+            ActivateFlame();
+        }
+        else
+        {
+            DeactivateFlame();
         }
 
         CalculateCurrentSpeed();
@@ -52,7 +59,11 @@ public class RocketMovement : MonoBehaviour
     {
         float force = (ROCKET_SPEED_UP + _speedUpUpgrade) * _rb.mass;
         Quaternion rotation = Quaternion.Euler(0.0f, 0.0f, ROTATION_LIMIT * _controlArm.GetArmValue());
+        rotation = Quaternion.Lerp(transform.rotation, rotation, ROTATION_SPEED * Time.fixedDeltaTime);
         Vector3 direction = Vector3.up;
+
+        // Rotate rocket
+        transform.rotation = rotation;
 
         // Move rocket
         _rb.AddForce(rotation * direction * force * Time.fixedDeltaTime);
@@ -63,10 +74,21 @@ public class RocketMovement : MonoBehaviour
         AudioManager.Instance.PlaySound(AudioManager.Sound.FIRE);
     }
 
+    private void ActivateFlame()
+    {
+        _flame.SetActive(true);
+    }
+
+    private void DeactivateFlame()
+    {
+        _flame.SetActive(false);
+    }
+
     private void StopMovement()
     {
         _rb.velocity = Vector3.zero;
         _rb.angularVelocity = 0.0f;
+        DeactivateFlame();
     }
 
     private void CalculateCurrentSpeed()

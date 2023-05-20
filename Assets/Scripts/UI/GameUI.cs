@@ -9,7 +9,7 @@ public class GameUI : MonoBehaviour
     [HideInInspector] public UnityEvent OnPauseButtonClick = new();
 
     [SerializeField] private TextMeshProUGUI _scoreText;
-    [SerializeField] private TextMeshProUGUI _coinsText;
+    [SerializeField] private TextMeshProUGUI _starsText;
     [SerializeField] private Slider _fuelBar;
     [SerializeField] private Button _pauseButton;
 
@@ -26,7 +26,7 @@ public class GameUI : MonoBehaviour
     private void InitializeListeners()
     {
         GameManager.Instance.OnScoreChange.AddListener(() => UpdateScoreText());
-        GameManager.Instance.OnCoinsChange.AddListener(() => UpdateCoinsText());
+        GameManager.Instance.OnStarsChange.AddListener(() => UpdateStarsText());
         GameManager.Instance.OnFuelChange.AddListener(() => UpdateFuelBar());
         _pauseButton.onClick.AddListener(OnPauseButtonClick.Invoke);
     }
@@ -34,7 +34,7 @@ public class GameUI : MonoBehaviour
     private void UpdateUI()
     {
         UpdateScoreText();
-        UpdateCoinsText();
+        UpdateStarsText();
         UpdateFuelBar();
     }
 
@@ -44,10 +44,10 @@ public class GameUI : MonoBehaviour
         _scoreText.text = Convert.ToString(score);
     }
 
-    private void UpdateCoinsText()
+    private void UpdateStarsText()
     {
-        int coins = GameManager.Instance.Coins;
-        _coinsText.text = Convert.ToString(coins);
+        int stars = GameManager.Instance.Stars;
+        _starsText.text = Convert.ToString(stars);
     }
 
     private void UpdateFuelBar()

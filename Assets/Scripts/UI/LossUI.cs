@@ -10,7 +10,7 @@ public class LossUI : MonoBehaviour, IPointerDownHandler
     [HideInInspector] public UnityEvent OnScreenTouch = new();
 
     [SerializeField] private TextMeshProUGUI _scoreText;
-    [SerializeField] private TextMeshProUGUI _coinsText;
+    [SerializeField] private TextMeshProUGUI _starsText;
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -25,7 +25,7 @@ public class LossUI : MonoBehaviour, IPointerDownHandler
     private void UpdateUI()
     {
         UpdateScoreText();
-        UpdateCoinsText();
+        UpdateStarsText();
     }
 
     private void UpdateScoreText()
@@ -34,9 +34,9 @@ public class LossUI : MonoBehaviour, IPointerDownHandler
         _scoreText.text = Convert.ToString(score);
     }
 
-    private void UpdateCoinsText()
+    private void UpdateStarsText()
     {
-        int coins = GameManager.Instance.Coins;
-        _coinsText.text = Convert.ToString(coins);
+        int stars = GameManager.Instance.Stars;
+        _starsText.text = Convert.ToString(stars);
     }
 }

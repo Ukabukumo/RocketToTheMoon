@@ -14,7 +14,8 @@ public class AudioManager : MonoBehaviour
     public enum Sound
     {
         FIRE,
-        COIN
+        STAR,
+        FUEL
     }
 
     [SerializeField] private AudioSource _musicAudioSource;
@@ -24,7 +25,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip _lossMusic;
     [SerializeField] private AudioClip _fireSound;
     [SerializeField] private AudioClip _collisionSound;
-    [SerializeField] private AudioClip _coinCollectSound;
+    [SerializeField] private AudioClip _starCollectSound;
     [SerializeField] private AudioClip _fuelCollectSound;
     [SerializeField] private AudioClip _buttonPressSound;
     [SerializeField] private AudioClip _loadSound;
@@ -64,8 +65,11 @@ public class AudioManager : MonoBehaviour
                     _soundAudioSource.Play();
                 }
                 break;
-            case Sound.COIN:
-                _soundAudioSource.PlayOneShot(_coinCollectSound);
+            case Sound.STAR:
+                _soundAudioSource.PlayOneShot(_starCollectSound);
+                break;
+            case Sound.FUEL:
+                _soundAudioSource.PlayOneShot(_fuelCollectSound);
                 break;
         }
     }

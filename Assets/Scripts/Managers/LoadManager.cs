@@ -10,10 +10,15 @@ public class LoadManager : MonoBehaviour
     [SerializeField] private Animator _leftLeafAnimator;
     [SerializeField] private Animator _rightLeafAnimator;
 
-    private string _leftLeafOpenName = "LeftLeafOpen";
-    private string _leftLeafCloseName = "LeftLeafClose";
-    private string _rightLeafOpenName = "RightLeafOpen";
-    private string _rightLeafCloseName = "RightLeafClose";
+    private const string LEFT_LEAF_OPEN_NAME = "LeftLeafOpen";
+    private const string LEFT_LEAF_CLOSE_NAME = "LeftLeafClose";
+    private const string RIGHT_LEAF_OPEN_NAME = "RightLeafOpen";
+    private const string RIGHT_LEAF_CLOSE_NAME = "RightLeafClose";
+
+    private const string LEFT_LEAF_OPEN_TRIGGER_NAME = "OpeningTrigger";
+    private const string LEFT_LEAF_CLOSE_TRIGGER_NAME = "ClosingTrigger";
+    private const string RIGHT_LEAF_OPEN_TRIGGER_NAME = "OpeningTrigger";
+    private const string RIGHT_LEAF_CLOSE_TRIGGER_NAME = "ClosingTrigger";
 
     private void Awake()
     {
@@ -39,14 +44,14 @@ public class LoadManager : MonoBehaviour
 
     private void BeginLoad()
     {
-        _leftLeafAnimator.SetTrigger("OpeningTrigger");
-        _rightLeafAnimator.SetTrigger("OpeningTrigger");
+        _leftLeafAnimator.SetTrigger(LEFT_LEAF_CLOSE_TRIGGER_NAME);
+        _rightLeafAnimator.SetTrigger(RIGHT_LEAF_CLOSE_TRIGGER_NAME);
     }
 
     private void EndLoad()
     {
-        _leftLeafAnimator.SetTrigger("ClosingTrigger");
-        _rightLeafAnimator.SetTrigger("ClosingTrigger");
+        _leftLeafAnimator.SetTrigger(LEFT_LEAF_OPEN_TRIGGER_NAME);
+        _rightLeafAnimator.SetTrigger(RIGHT_LEAF_OPEN_TRIGGER_NAME);
     }
 
     private IEnumerator AnimationPlayback(UnityAction Action)
@@ -55,8 +60,8 @@ public class LoadManager : MonoBehaviour
 
         BeginLoad();
 
-        while (!_leftLeafAnimator.GetCurrentAnimatorStateInfo(0).IsName(_leftLeafOpenName) &&
-               !_rightLeafAnimator.GetCurrentAnimatorStateInfo(0).IsName(_rightLeafOpenName))
+        while (!_leftLeafAnimator.GetCurrentAnimatorStateInfo(0).IsName(LEFT_LEAF_CLOSE_NAME) &&
+               !_rightLeafAnimator.GetCurrentAnimatorStateInfo(0).IsName(RIGHT_LEAF_CLOSE_NAME))
         {
             yield return null;
         }
@@ -65,8 +70,8 @@ public class LoadManager : MonoBehaviour
 
         EndLoad();
 
-        while (!_leftLeafAnimator.GetCurrentAnimatorStateInfo(0).IsName(_leftLeafCloseName) &&
-               !_rightLeafAnimator.GetCurrentAnimatorStateInfo(0).IsName(_rightLeafCloseName))
+        while (!_leftLeafAnimator.GetCurrentAnimatorStateInfo(0).IsName(LEFT_LEAF_OPEN_NAME) &&
+               !_rightLeafAnimator.GetCurrentAnimatorStateInfo(0).IsName(RIGHT_LEAF_OPEN_NAME))
         {
             yield return null;
         }

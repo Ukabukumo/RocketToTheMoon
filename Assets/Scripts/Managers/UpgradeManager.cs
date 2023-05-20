@@ -6,17 +6,17 @@ public class UpgradeManager : MonoBehaviour
 {
     public static UpgradeManager Instance;
 
-    private float _priceCoefficient = 0.3f;
+    private const float PRICE_COEFFICIENT = 0.3f;
     private const float MAX_SPEED_UP_UPGRADE = 25.0f;
     private const float MAX_FUEL_CONSUMPTION_UPGRADE = 25.0f;
-    private const float MAX_ENEMY_SPEED_UPGRADE = 25.0f;
+    private const float MAX_OBSTACLE_SPEED_UPGRADE = 25.0f;
     private const float MAX_DOUBLE_LIFE_UPGRADE = 1.0f;
 
     private readonly Dictionary<Upgrade, float> _maxUpgradeValues = new Dictionary<Upgrade, float>
     {
         { Upgrade.SPEED_UP, MAX_SPEED_UP_UPGRADE },
         { Upgrade.FUEL_CONSUMPTION, MAX_FUEL_CONSUMPTION_UPGRADE },
-        { Upgrade.ENEMY_SPEED, MAX_ENEMY_SPEED_UPGRADE },
+        { Upgrade.OBSTACLE_SPEED, MAX_OBSTACLE_SPEED_UPGRADE },
         { Upgrade.DOUBLE_LIFE, MAX_DOUBLE_LIFE_UPGRADE }
     };
 
@@ -24,31 +24,22 @@ public class UpgradeManager : MonoBehaviour
     {
         SPEED_UP,
         FUEL_CONSUMPTION,
-        ENEMY_SPEED,
+        OBSTACLE_SPEED,
         DOUBLE_LIFE,
         COUNT
     }
 
     public bool SkillUpgradeable(Upgrade upgrade)
     {
-        int coinsAmount = SaveDataManager.Instance.LoadCoins();
-        float upgradeValue = SaveDataManager.Instance.LoadUpgrade(upgrade);
-        int upgradePrice = SaveDataManager.Instance.LoadPrice(upgrade);
-
-        if (!_maxUpgradeValues.TryGetValue(upgrade, out float maxUpgradeValue))
-        {
-            throw new ArgumentException($"Invalid upgrade: {upgrade}");
-        }
-
-        return ((upgradePrice <= coinsAmount) && (upgradeValue < maxUpgradeValue));
+        return (CanBuy(upgrade) && CanUpgrade(upgrade));
     }
 
     public bool CanBuy(Upgrade upgrade)
     {
-        int coinsAmount = SaveDataManager.Instance.LoadCoins();
+        int starsAmount = SaveDataManager.Instance.LoadStars();
         int upgradePrice = SaveDataManager.Instance.LoadPrice(upgrade);
 
-        return (upgradePrice <= coinsAmount);
+        return (upgradePrice <= starsAmount);
     }
 
     public bool CanUpgrade(Upgrade upgrade)
@@ -103,11 +94,11 @@ public class UpgradeManager : MonoBehaviour
 
     private void BuyUpgrade(int price)
     {
-        SaveDataManager.Instance.AddCoins(-price);
+        SaveDataManager.Instance.AddStars(-price);
     }
 
     private int UpdatePrice(int price)
     {
-        return (int)Mathf.Ceil(price + price * _priceCoefficient);
+        return (int)Mathf.Ceil(price + price * PRICE_COEFFICIENT);
     }
 }

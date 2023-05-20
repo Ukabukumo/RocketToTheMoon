@@ -10,15 +10,17 @@ public class Spawner : MonoBehaviour
     [SerializeField] private RocketMovement _rocketMovement;
     [SerializeField] private Transform _startSpawningPoint;
     [SerializeField] private string _parentName = "Parent";
+    [SerializeField] private Vector2 _borders = new(10.0f, 10.0f);
+    [SerializeField] private bool _considerTime;
     [SerializeField] private float _timeBetweenSpawn = 1.0f;
-    [SerializeField] private Vector2 _borders = new Vector2(10.0f, 10.0f);
-    [SerializeField] private bool _considerDistance = false;
-    [SerializeField] private float _distanceBetween = 5.0f;
+    [SerializeField] private bool _considerDistance;
+    [SerializeField] private float _distanceBetweenSpawn = 5.0f;
 
     private List<GameObject> _spawnedObjects;
     private Transform _parent;
     private Coroutine _spawnTimer;
     private float _distance;
+    private float _time;
     private Vector3 _cameraLastPosition;
     private bool _isInitialized = false;
 
@@ -36,11 +38,14 @@ public class Spawner : MonoBehaviour
 
     private void Update()
     {
-        if (_isInitialized)
+        if (!_isInitialized)
         {
-            CheckBorderCrossing();
-            CalculateDistance();
+            return;
         }
+
+        CheckBorderCrossing();
+        CalculateTime();
+        CalculateDistance();
     }
 
     private void InitializeSpawner()
@@ -50,6 +55,7 @@ public class Spawner : MonoBehaviour
         _parent = new GameObject(_parentName).transform;
         _cameraLastPosition = _cameraObject.transform.position;
         _distance = 0.0f;
+        _time = 0.0f;
     }
 
     private void DeinitializeSpawner()
@@ -62,20 +68,29 @@ public class Spawner : MonoBehaviour
     {
         while (true)
         {
+            yield return null;
+
             // Check position camera higher than specified point
             if (_cameraObject.transform.position.y < _startSpawningPoint.position.y)
             {
-                yield return null;
                 continue;
             }
 
-            yield return new WaitForSeconds(_timeBetweenSpawn);
-
-            if (!_considerDistance || (_distance > _distanceBetween))
+            // Check time between spawn
+            if (_considerTime && (_time < _timeBetweenSpawn))
             {
-                SpawnObject();
-                _distance = 0.0f;
+                continue;
             }
+
+            // Check distance between spawn
+            if (_considerDistance && (_distance < _distanceBetweenSpawn))
+            {
+                continue;
+            }
+
+            SpawnObject();
+            _time = 0.0f;
+            _distance = 0.0f;
         }
     }
 
@@ -100,13 +115,19 @@ public class Spawner : MonoBehaviour
     {
         for (int i = _spawnedObjects.Count - 1; i >= 0; --i)
         {
-            GameObject enemy = _spawnedObjects[i];
-            Vector3 enemyPosition = enemy.transform.position;
+            GameObject spawnedObject = _spawnedObjects[i];
 
-            if (Mathf.Abs(enemyPosition.x) > _borders.x ||
-                _cameraObject.transform.position.y - enemyPosition.y > _borders.y)
+            if (spawnedObject == null)
             {
-                Destroy(enemy);
+                continue;
+            }
+            
+            Vector3 objectPosition = spawnedObject.transform.position;
+
+            if (Mathf.Abs(objectPosition.x) > _borders.x ||
+                _cameraObject.transform.position.y - objectPosition.y > _borders.y)
+            {
+                Destroy(spawnedObject);
                 _spawnedObjects.RemoveAt(i);
             }
         }
@@ -120,11 +141,23 @@ public class Spawner : MonoBehaviour
         }
 
         _spawnedObjects.Clear();
+        Destroy(_parent.gameObject);
     }
 
     private void CalculateDistance()
     {
-        _distance += _cameraObject.transform.position.y - _cameraLastPosition.y;
-        _cameraLastPosition = _cameraObject.transform.position;
+        if (_considerDistance)
+        {
+            _distance += _cameraObject.transform.position.y - _cameraLastPosition.y;
+            _cameraLastPosition = _cameraObject.transform.position;
+        }
+    }
+
+    private void CalculateTime()
+    {
+        if (_considerTime)
+        {
+            _time += Time.deltaTime;
+        }
     }
 }

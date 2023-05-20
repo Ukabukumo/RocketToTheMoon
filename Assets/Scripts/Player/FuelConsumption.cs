@@ -20,6 +20,12 @@ public class FuelConsumption : MonoBehaviour
         return normalizedFuel;
     }
 
+    public void AddFuel(float fuelPercentage)
+    {
+        _currentFuel += _maxFuel * fuelPercentage;
+        _currentFuel = _currentFuel > _maxFuel ? _maxFuel : _currentFuel;
+    }
+
     private void Awake()
     {
         InitializeListeners();

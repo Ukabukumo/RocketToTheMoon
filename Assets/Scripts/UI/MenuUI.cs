@@ -12,7 +12,7 @@ public class MenuUI : MonoBehaviour, IPointerDownHandler
     [HideInInspector] public UnityEvent OnScreenTouch = new();
 
     [SerializeField] private TextMeshProUGUI[] _scoreTexts;
-    [SerializeField] private TextMeshProUGUI _coinsText;
+    [SerializeField] private TextMeshProUGUI _starsText;
     [SerializeField] private Button _upgradeMenuButton;
 
     public void OnPointerDown(PointerEventData eventData)
@@ -33,19 +33,19 @@ public class MenuUI : MonoBehaviour, IPointerDownHandler
     private void InitializeListeners()
     {
         _upgradeMenuButton.onClick.AddListener(OnUpgradeMenuButtonClick.Invoke);
-        SaveDataManager.Instance.OnCoinsChangeEvent.AddListener(() => OnCoinsChange());
+        SaveDataManager.Instance.OnStarsChangeEvent.AddListener(() => OnStarsChange());
     }
 
-    private void OnCoinsChange()
+    private void OnStarsChange()
     {
-        int coins = SaveDataManager.Instance.LoadCoins();
-        _coinsText.text = Convert.ToString(coins);
+        int stars = SaveDataManager.Instance.LoadStars();
+        _starsText.text = Convert.ToString(stars);
     }
 
     private void UpdateUI()
     {
         UpdateScoreTexts();
-        UpdateCoinsText();
+        UpdateStarsText();
     }
 
     private void UpdateScoreTexts()
@@ -58,9 +58,9 @@ public class MenuUI : MonoBehaviour, IPointerDownHandler
         }
     }
 
-    private void UpdateCoinsText()
+    private void UpdateStarsText()
     {
-        int coins = SaveDataManager.Instance.LoadCoins();
-        _coinsText.text = Convert.ToString(coins);
+        int stars = SaveDataManager.Instance.LoadStars();
+        _starsText.text = Convert.ToString(stars);
     }
 }

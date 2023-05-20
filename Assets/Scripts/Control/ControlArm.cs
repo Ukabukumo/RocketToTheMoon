@@ -6,8 +6,9 @@ public class ControlArm : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     [SerializeField] private GameObject _armBase;
     [SerializeField] private GameObject _arm;
 
+    private const float _armChangeLimit = 200.0f;
+
     private Vector2 _touchBeginPosition;
-    private float _armChangeLimit = 200.0f;
     private float _armValue= 0.0f;
     private bool _isControlling = false;
 
@@ -18,8 +19,11 @@ public class ControlArm : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         _armBase.SetActive(true);
         _arm.SetActive(true);
 
+        _armValue = 0.0f;
+        transform.position = _touchBeginPosition;
         _armBase.transform.position = _touchBeginPosition;
-        _arm.transform.position = _touchBeginPosition;
+        _arm.transform.position = new Vector3(_touchBeginPosition.x, _arm.transform.position.y);
+        _arm.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
 
         _isControlling = true;
     }
@@ -41,6 +45,7 @@ public class ControlArm : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
         Vector3 newArmPosition = new Vector3(eventData.position.x, _arm.transform.position.y, _arm.transform.position.z);
         _arm.transform.position = newArmPosition;
+        _arm.transform.rotation = LookAtArmBase();
 
         // Cast changeX to range [-200.0f; 200.0f]
         if (Mathf.Abs(changeX) > _armChangeLimit)
@@ -71,5 +76,17 @@ public class ControlArm : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         _armValue = 0.0f;
 
         _isControlling = false;
+    }
+
+    private Quaternion LookAtArmBase()
+    {
+        Vector3 direction = _armBase.transform.position - _arm.transform.position;
+        direction.Normalize();
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90.0f;
+
+        Quaternion rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+        return rotation;
     }
 }
