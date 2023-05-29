@@ -34,10 +34,12 @@ public class RocketMovement : MonoBehaviour
         {
             Movement();
             ActivateFlame();
+            AudioManager.Instance.PlayRocketSound();
         }
         else
         {
             DeactivateFlame();
+            AudioManager.Instance.StopRocketSound();
         }
 
         CalculateCurrentSpeed();
@@ -70,8 +72,6 @@ public class RocketMovement : MonoBehaviour
 
         // Limit rocket speed
         _rb.velocity = Vector3.ClampMagnitude(_rb.velocity, MAX_ROCKET_SPEED);
-
-        AudioManager.Instance.PlaySound(AudioManager.Sound.FIRE);
     }
 
     private void ActivateFlame()

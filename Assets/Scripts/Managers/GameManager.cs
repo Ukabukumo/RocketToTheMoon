@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _cameraObject;
 
     private const float SCORE_COEFFICIENT = 100.0f;
-    private const float FUEL_PERCENTAGE = 15.0f;
+    private const float FUEL_PERCENTAGE = 0.15f;
 
     private FuelConsumption _rocketFuelConsumption;
     private CollisionDetection _rocketCollisionDetection;
@@ -239,7 +239,10 @@ public class GameManager : MonoBehaviour
     private void InitializeListeners()
     {
         _rocketFuelConsumption.OnFuelRunOutEvent.AddListener(() => LossGame());
-        _rocketCollisionDetection.OnObstacleCollisionEvent.AddListener(() => LossGame());
+        _rocketCollisionDetection.OnObstacleCollisionEvent.AddListener(delegate {
+            //AudioManager.Instance.PlaySound(AudioManager.Sound.COLLISION);
+            LossGame();
+        });
         _rocketCollisionDetection.OnStarCollisionEvent.AddListener(() => CollectStar());
         _rocketCollisionDetection.OnFuelCollisionEvent.AddListener(() => CollectFuel());
         _rocketBeyondScreenDetection.OnScreenBottomReached.AddListener(() => LossGame());

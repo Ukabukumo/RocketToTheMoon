@@ -173,6 +173,24 @@ public class SaveDataManager : MonoBehaviour
         }
     }
 
+    public void SaveAudio(string audioName, float value)
+    {
+        PlayerPrefs.SetFloat(audioName, value);
+        PlayerPrefs.Save();
+    }
+
+    public float LoadAudio(string audioName)
+    {
+        if (PlayerPrefs.HasKey(audioName))
+        {
+            return PlayerPrefs.GetFloat(audioName);
+        }
+        else
+        {
+            return 0.5f;
+        }
+    }
+
     private void Awake()
     {
         InitializeInstance();

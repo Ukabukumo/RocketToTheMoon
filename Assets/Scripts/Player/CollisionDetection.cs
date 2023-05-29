@@ -8,46 +8,48 @@ public class CollisionDetection : MonoBehaviour
     [HideInInspector] public UnityEvent OnStarCollisionEvent = new();
     [HideInInspector] public UnityEvent OnFuelCollisionEvent = new();
 
-    private const string STAR_COLLECT_TRIGGER = "StarCollected";
-    private const string STAR_COLLECT_NAME = "Collect";
+    private const string STAR_COLLECT_TRIGGER = "StarCollect";
+    private const string FUEL_COLLECT_TRIGGER = "FuelCollect";
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         switch (other.tag)
         {
             case "Obstacle":
+                AudioManager.Instance.PlaySound(AudioManager.Sound.COLLISION);
                 OnObstacleCollisionEvent.Invoke();
                 break;
             case "Star":
+                other.tag = "Collected";
                 OnStarCollisionEvent.Invoke();
-                StartCoroutine(StarCollect(other.gameObject));
+                StartCoroutine(CollectTimer(other.gameObject, STAR_COLLECT_TRIGGER));
                 break;
             case "Fuel":
+                other.tag = "Collected";
                 OnFuelCollisionEvent.Invoke();
-                Destroy(other.gameObject);
+                StartCoroutine(CollectTimer(other.gameObject, FUEL_COLLECT_TRIGGER));
                 break;
         }
     }
 
-    private IEnumerator StarCollect(GameObject star)
+    private IEnumerator CollectTimer(GameObject collectedObject, string triggerName)
     {
-        Animator starAnimator = star.GetComponent<Animator>();
+        Animator animator = collectedObject.GetComponent<Animator>();
 
-        if (!starAnimator)
+        if (!animator)
         {
-            throw new MissingComponentException("Animator component is missing from StarObject");
+            throw new MissingComponentException("Animator component is missing from Collected Object");
         }
 
-        starAnimator.SetTrigger(STAR_COLLECT_TRIGGER);
+        animator.SetTrigger(triggerName);
 
-        while (star && !starAnimator.GetCurrentAnimatorStateInfo(0).IsName(STAR_COLLECT_NAME))
-        {
-            yield return null;
-        }
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        float duration = stateInfo.length;
+        yield return new WaitForSeconds(duration);
 
-        if (star)
+        if (collectedObject)
         {
-            Destroy(star);
+            Destroy(collectedObject);
         }
     }
 }

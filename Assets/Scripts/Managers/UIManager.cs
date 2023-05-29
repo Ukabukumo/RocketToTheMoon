@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
+    [HideInInspector] public UnityEvent OnButtonClick = new();
 
     [Header("Screens UI")]
     [SerializeField] private MenuUI _menuUI;
@@ -89,6 +90,17 @@ public class UIManager : MonoBehaviour
         GameManager.Instance.OnLossGame.AddListener(() => SwitchUI());
         GameManager.Instance.OnRestartGame.AddListener(() => SwitchUI());
         GameManager.Instance.OnUpgradeMenu.AddListener(() => SwitchUI());
+
+        _menuUI.OnScreenTouch.AddListener(() => OnButtonClick.Invoke());
+        _menuUI.OnUpgradeMenuButtonClick.AddListener(() => OnButtonClick.Invoke());
+        _upgradeUI.OnMenuButtonClick.AddListener(() => OnButtonClick.Invoke());
+        _gameUI.OnPauseButtonClick.AddListener(() => OnButtonClick.Invoke());
+        _pauseUI.OnReturnButtonClick.AddListener(() => OnButtonClick.Invoke());
+        _pauseUI.OnMenuButtonClick.AddListener(() => OnButtonClick.Invoke());
+        _reviveUI.OnReviveForLifeButtonClick.AddListener(() => OnButtonClick.Invoke());
+        _reviveUI.OnReviveForAdButtonClick.AddListener(() => OnButtonClick.Invoke());
+        _reviveUI.OnMenuButtonClick.AddListener(() => OnButtonClick.Invoke());
+        _lossUI.OnScreenTouch.AddListener(() => OnButtonClick.Invoke());
     }
 
     private void SwitchUI()

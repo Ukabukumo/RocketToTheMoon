@@ -8,7 +8,12 @@ public class AudioControl : MonoBehaviour
 
     private AudioSource _audioSource;
 
-    private void Awake()
+    public string GetAudioName()
+    {
+        return _audioName;
+    }
+
+    private void Start()
     {
         InitializeAudio();
     }
@@ -17,20 +22,13 @@ public class AudioControl : MonoBehaviour
     {
         _audioSource = GetComponent<AudioSource>();
         _audioSlider.onValueChanged.AddListener(delegate { ChangeVolumeValue(); });
-
-        if (PlayerPrefs.HasKey(_audioName))
-        {
-            _audioSlider.value = PlayerPrefs.GetFloat(_audioName);
-        }
-        else
-        {
-            _audioSlider.value = 0.5f;
-        }
+        _audioSlider.value = SaveDataManager.Instance.LoadAudio(_audioName);
+        ChangeVolumeValue();
     }
 
     private void ChangeVolumeValue()
     {
         _audioSource.volume = _audioSlider.value;
-        PlayerPrefs.SetFloat(_audioName, _audioSlider.value);
+        SaveDataManager.Instance.SaveAudio(_audioName, _audioSlider.value);
     }
 }

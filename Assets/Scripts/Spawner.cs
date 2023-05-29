@@ -10,12 +10,14 @@ public class Spawner : MonoBehaviour
     [SerializeField] private RocketMovement _rocketMovement;
     [SerializeField] private Transform _startSpawningPoint;
     [SerializeField] private string _parentName = "Parent";
+    //[SerializeField] private GameObject _objectPoolPrefab;
     [SerializeField] private Vector2 _borders = new(10.0f, 10.0f);
     [SerializeField] private bool _considerTime;
     [SerializeField] private float _timeBetweenSpawn = 1.0f;
     [SerializeField] private bool _considerDistance;
     [SerializeField] private float _distanceBetweenSpawn = 5.0f;
 
+    //private GenericObjectPool<T> _objectPool;
     private List<GameObject> _spawnedObjects;
     private Transform _parent;
     private Coroutine _spawnTimer;
@@ -35,6 +37,16 @@ public class Spawner : MonoBehaviour
         DeinitializeSpawner();
         StopCoroutine(_spawnTimer);
     }
+
+/*    private void Awake()
+    {
+        if (!TryGetComponent(out GenericObjectPool<T> objectPool))
+        {
+            throw new MissingComponentException($"{typeof(T).FullName} component is missing from SpawnerObject");
+        }
+
+        _objectPool = objectPool;
+    }*/
 
     private void Update()
     {
@@ -100,6 +112,7 @@ public class Spawner : MonoBehaviour
         int randomSpawnPointIndex = Random.Range(0, _spawnPoints.Length);
 
         GameObject spawnedObject = Instantiate(_spawningPrefabs[randomObjectIndex], _parent);
+        //GameObject spawnedObject = GenericObjectPool<T>.Instance.Get().gameObject;
 
         float rocketCurrentSpeed = _rocketMovement.GetCurrentSpeed();
         Vector3 spawnPosition = new Vector3(_spawnPoints[randomSpawnPointIndex].transform.position.x,
@@ -121,7 +134,7 @@ public class Spawner : MonoBehaviour
             {
                 continue;
             }
-            
+
             Vector3 objectPosition = spawnedObject.transform.position;
 
             if (Mathf.Abs(objectPosition.x) > _borders.x ||

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -7420398871346982568}
   - component: {fileID: -6300826917374546711}
   - component: {fileID: 7447988292368238964}
+  - component: {fileID: 3894811538028593569}
   m_Layer: 0
   m_Name: Fuel
   m_TagString: Fuel
@@ -111,7 +112,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2.65, y: 2.65}
   m_EdgeRadius: 0
 --- !u!50 &-6300826917374546711
 Rigidbody2D:
@@ -150,3 +151,24 @@ MonoBehaviour:
   - Player
   _pushForceMagnitude: 0.1
   _moveAwayForceMagnitude: 0.3
+--- !u!95 &3894811538028593569
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6013494224377310708}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f8a29ffd6e99e6748924c495b366c194, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

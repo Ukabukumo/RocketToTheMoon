@@ -7,6 +7,7 @@ TagManager:
   - Star
   - Fuel
   - Obstacle
+  - Collected
   layers:
   - Default
   - TransparentFX

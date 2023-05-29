@@ -7,28 +7,32 @@ public class AudioManager : MonoBehaviour
     public enum Music
     {
         MENU,
-        GAME,
-        LOSS
+        GAME
     }
 
     public enum Sound
     {
-        FIRE,
+        LOSS,
         STAR,
-        FUEL
+        FUEL,
+        UPGRADE,
+        CLICK,
+        COLLISION
     }
 
     [SerializeField] private AudioSource _musicAudioSource;
     [SerializeField] private AudioSource _soundAudioSource;
     [SerializeField] private AudioClip _menuMusic;
     [SerializeField] private AudioClip _gameMusic;
-    [SerializeField] private AudioClip _lossMusic;
+    [SerializeField] private AudioClip _lossSound;
     [SerializeField] private AudioClip _fireSound;
-    [SerializeField] private AudioClip _collisionSound;
-    [SerializeField] private AudioClip _starCollectSound;
+    [SerializeField] private AudioClip[] _starCollectSounds;
     [SerializeField] private AudioClip _fuelCollectSound;
-    [SerializeField] private AudioClip _buttonPressSound;
-    [SerializeField] private AudioClip _loadSound;
+    [SerializeField] private AudioClip _clickSound;
+    [SerializeField] private AudioClip _upgradeSound;
+    [SerializeField] private AudioClip _collisionSound;
+
+    private AudioControl _musicAudioControl;
 
     public void PlayMusic(Music music)
     {
@@ -39,9 +43,6 @@ public class AudioManager : MonoBehaviour
                 break;
             case Music.GAME:
                 _musicAudioSource.clip = _gameMusic;
-                break;
-            case Music.LOSS:
-                _musicAudioSource.clip = _lossMusic;
                 break;
         }
 
@@ -58,18 +59,24 @@ public class AudioManager : MonoBehaviour
     {
         switch(sound)
         {
-            case Sound.FIRE:
-                _soundAudioSource.clip = _fireSound;
-                if (!_soundAudioSource.isPlaying || _soundAudioSource.clip != _fireSound)
-                {
-                    _soundAudioSource.Play();
-                }
+            case Sound.LOSS:
+                _soundAudioSource.PlayOneShot(_lossSound);
                 break;
             case Sound.STAR:
-                _soundAudioSource.PlayOneShot(_starCollectSound);
+                int randomIndex = Random.Range(0, _starCollectSounds.Length);
+                _soundAudioSource.PlayOneShot(_starCollectSounds[randomIndex]);
                 break;
             case Sound.FUEL:
                 _soundAudioSource.PlayOneShot(_fuelCollectSound);
+                break;
+            case Sound.UPGRADE:
+                _soundAudioSource.PlayOneShot(_upgradeSound);
+                break;
+            case Sound.CLICK:
+                _soundAudioSource.PlayOneShot(_clickSound);
+                break;
+            case Sound.COLLISION:
+                _soundAudioSource.PlayOneShot(_collisionSound);
                 break;
         }
     }
@@ -79,10 +86,25 @@ public class AudioManager : MonoBehaviour
         _soundAudioSource.Stop();
     }
 
+    public void PlayRocketSound()
+    {
+        _soundAudioSource.clip = _fireSound;
+        if (!_soundAudioSource.isPlaying || _soundAudioSource.clip != _fireSound)
+        {
+            _soundAudioSource.Play();
+        }
+    }
+
+    public void StopRocketSound()
+    {
+        _soundAudioSource.clip = null;
+    }
+
     private void Awake()
     {
         InitializeInstance();
         InitializeListeners();
+        InitializeManager();
     }
 
     private void InitializeInstance()
@@ -99,8 +121,30 @@ public class AudioManager : MonoBehaviour
 
     private void InitializeListeners()
     {
-        GameManager.Instance.OnStartGame.AddListener(() => PlayMusic(Music.GAME));
-        GameManager.Instance.OnLossGame.AddListener(delegate { PlayMusic(Music.LOSS); StopSound(); });
-        GameManager.Instance.OnRestartGame.AddListener(() => PlayMusic(Music.MENU));
+        GameManager.Instance.OnStartGame.AddListener(delegate { PlayMusic(Music.GAME); });
+        GameManager.Instance.OnLossGame.AddListener(delegate { StopMusic(); StopRocketSound(); PlaySound(Sound.LOSS); });
+        GameManager.Instance.OnRestartGame.AddListener(delegate { StopSound(); PlayMusic(Music.MENU); SetMusicVolume(1.0f); });
+        GameManager.Instance.OnPauseGame.AddListener(delegate { SetMusicVolume(0.5f); });
+        GameManager.Instance.OnUnpauseGame.AddListener(delegate { SetMusicVolume(1.0f); });
+        GameManager.Instance.OnUpgradeMenu.AddListener(delegate { SetMusicVolume(0.5f); });
+        GameManager.Instance.OnRevivePause.AddListener(delegate { SetMusicVolume(0.5f); StopRocketSound(); });
+        GameManager.Instance.OnUpgradeSkill.AddListener((UpgradeManager.Upgrade upgrade) => PlaySound(Sound.UPGRADE));
+
+        UIManager.Instance.OnButtonClick.AddListener(() => PlaySound(Sound.CLICK));
+    }
+
+    private void InitializeManager()
+    {
+        if (!_musicAudioSource.TryGetComponent(out AudioControl audioControl))
+        {
+            throw new MissingComponentException("AudioControl component is missing from MusicAudioSourceObject");
+        }
+
+        _musicAudioControl = audioControl;
+    }
+
+    private void SetMusicVolume(float value)
+    {
+        _musicAudioSource.volume = value * SaveDataManager.Instance.LoadAudio(_musicAudioControl.GetAudioName());
     }
 }
